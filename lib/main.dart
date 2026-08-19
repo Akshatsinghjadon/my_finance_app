@@ -91,9 +91,9 @@ class CampusLedgerApp extends StatelessWidget {
           return MaterialApp(
             title: 'CampusLedger',
             debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: theme.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: theme.isDark ? ThemeMode.dark : ThemeMode.light,
             home: const AppShell(),
           );
         },
