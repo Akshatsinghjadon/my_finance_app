@@ -12,6 +12,7 @@ import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   final theme = ThemeController();
   final wallet = CoinWallet();
   final ads = AdService();
@@ -23,12 +24,29 @@ Future<void> main() async {
     notifications: notifications,
   );
 
+  // Load essential local app data first
   await theme.load();
   await wallet.load();
   await store.load();
-  await notifications.initialize();
-  await ads.initialize();
-  await tapjoy.initialize();
+
+  // Safely initialize external services without crashing app launch
+  try {
+    await notifications.initialize();
+  } catch (e) {
+    debugPrint('Notifications init error: $e');
+  }
+
+  try {
+    await ads.initialize();
+  } catch (e) {
+    debugPrint('AdMob init error: $e');
+  }
+
+  try {
+    await tapjoy.initialize();
+  } catch (e) {
+    debugPrint('Tapjoy init error: $e');
+  }
 
   runApp(
     CampusLedgerApp(
@@ -42,6 +60,12 @@ Future<void> main() async {
 }
 
 class CampusLedgerApp extends StatelessWidget {
+  final ThemeController theme;
+  final CoinWallet wallet;
+  final AdService ads;
+  final TapjoyService tapjoy;
+  final FinanceStore store;
+
   const CampusLedgerApp({
     super.key,
     required this.theme,
@@ -51,60 +75,29 @@ class CampusLedgerApp extends StatelessWidget {
     required this.store,
   });
 
-  final ThemeController theme;
-  final CoinWallet wallet;
-  final AdService ads;
-  final TapjoyService tapjoy;
-  final FinanceStore store;
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: theme),
         ChangeNotifierProvider.value(value: wallet),
-        ChangeNotifierProvider.value(value: ads),
-        ChangeNotifierProvider.value(value: tapjoy),
+        Provider.value(value: ads),
+        Provider.value(value: tapjoy),
         ChangeNotifierProvider.value(value: store),
       ],
-      child: Consumer<ThemeController>(
-        builder: (context, theme, _) {
+      child: AnimatedBuilder(
+        animation: theme,
+        builder: (context, child) {
           return MaterialApp(
             title: 'CampusLedger',
             debugShowCheckedModeBanner: false,
-            theme: AppTheme.light(),
-            darkTheme: AppTheme.dark(),
-            themeMode: theme.mode,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: theme.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             home: const AppShell(),
           );
         },
       ),
-    );
-  }
-}
-
-/// Kept so existing tests that pump [MyApp] still compile.
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = ThemeController();
-    final wallet = CoinWallet();
-    final ads = AdService();
-    final notifications = NotificationService();
-    final tapjoy = TapjoyService(wallet);
-    final store = FinanceStore(
-      wallet: wallet,
-      ads: ads,
-      notifications: notifications,
-    );
-    return CampusLedgerApp(
-      theme: theme,
-      wallet: wallet,
-      ads: ads,
-      tapjoy: tapjoy,
-      store: store,
     );
   }
 }
