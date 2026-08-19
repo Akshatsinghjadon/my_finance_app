@@ -1,0 +1,34 @@
+name: my_finance_app
+description: CampusLedger — personal finance for students, hostelers, freelancers, and founders.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  provider: ^6.1.5
+  shared_preferences: ^2.5.3
+  intl: ^0.20.2
+  uuid: ^4.5.1
+  google_mobile_ads: ^6.0.0
+  # Official Tapjoy Flutter SDK (pub.dev name is tapjoy_offerwall; tapjoy_flutter is not published)
+  tapjoy_offerwall: ^14.6.0
+  flutter_local_notifications: ^19.4.2
+  timezone: ^0.10.1
+  fl_chart: ^1.1.1
+  csv: ^6.0.0
+  path_provider: ^2.1.5
+  share_plus: ^11.1.0
+  permission_handler: ^12.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
