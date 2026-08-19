@@ -11,6 +11,7 @@ import 'state/theme_controller.dart';
 import 'theme/app_theme.dart';
 
 Future<void> main() async {
+  // 1. Initialize native Flutter bindings
   WidgetsFlutterBinding.ensureInitialized();
 
   final theme = ThemeController();
@@ -24,12 +25,12 @@ Future<void> main() async {
     notifications: notifications,
   );
 
-  // Load essential local app data first
+  // 2. Load essential local storage states
   await theme.load();
   await wallet.load();
   await store.load();
 
-  // Safely initialize external services without crashing app launch
+  // 3. Initialize native external plugins safely
   try {
     await notifications.initialize();
   } catch (e) {
@@ -89,10 +90,10 @@ class CampusLedgerApp extends StatelessWidget {
         animation: theme,
         builder: (context, child) {
           return MaterialApp(
-            title: 'CampusLedger',
+            title: 'Expense manager',
             debugShowCheckedModeBanner: false,
-            theme: AppTheme.light,
-            darkTheme: AppTheme.dark,
+            theme: AppTheme.light(),
+            darkTheme: AppTheme.dark(),
             themeMode: theme.isDark ? ThemeMode.dark : ThemeMode.light,
             home: const AppShell(),
           );
